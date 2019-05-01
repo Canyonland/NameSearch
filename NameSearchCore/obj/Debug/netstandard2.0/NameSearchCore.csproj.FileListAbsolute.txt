@@ -1,9 +1,0 @@
-F:\Projects\NameSearch\NameSearch\NameSearchCore\bin\Debug\netstandard2.0\NameSearchCore.deps.json
-F:\Projects\NameSearch\NameSearch\NameSearchCore\bin\Debug\netstandard2.0\NameSearchCore.dll
-F:\Projects\NameSearch\NameSearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.csproj.CoreCompileInputs.cache
-F:\Projects\NameSearch\NameSearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.AssemblyInfoInputs.cache
-F:\Projects\NameSearch\NameSearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.AssemblyInfo.cs
-F:\Projects\NameSearch\namesearch\NameSearchCore\bin\Debug\netstandard2.0\NameSearchCore.pdb
-F:\Projects\NameSearch\namesearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.dll
-F:\Projects\NameSearch\namesearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.pdb
-F:\Projects\NameSearch\NameSearch\NameSearchCore\obj\Debug\netstandard2.0\NameSearchCore.csprojAssemblyReference.cache
