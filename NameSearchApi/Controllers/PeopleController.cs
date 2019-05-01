@@ -9,6 +9,7 @@ using static System.String;
 using static System.Linq.Queryable;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace NameSearchApi.Controllers
 {
@@ -16,20 +17,18 @@ namespace NameSearchApi.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        private PersonRepository _personRepository;
-        private FileSaver _fileSaver;
-        public PeopleController(PersonRepository personRepository, FileSaver fileSaver)
+        private PersonService _personService;
+        public PeopleController( PersonService personService)
         {
-            _personRepository = personRepository;
-            _fileSaver = fileSaver;
+            _personService = personService;
         }
         // GET api/People
         [HttpGet()]
         public async Task<IActionResult> Get(string name)
         {
-            if (IsNullOrEmpty(name))
-                return StatusCode(400, "name can't be blank");
-            List<PersonProfile> people = await _personRepository.SearchPeople(name);
+            //if (IsNullOrEmpty(name))
+             //   return StatusCode(400, "name can't be blank");
+            List<PersonProfile> people = await _personService.SearchPeopleByName(name);
 
 
             if (people != null && people.Any())
@@ -47,15 +46,15 @@ namespace NameSearchApi.Controllers
         {
             if (file.ContentType != "image/jpeg")
                 return StatusCode(400, "please upload a jpg image");
-            var person = await _personRepository.Get(id);
+            var person = await _personService.GetPersonByID(id);
             if(person ==null)
                 return StatusCode(404);
             else
             {
-               
-                person.PicturePath = await _fileSaver.Save(file);
-                await _personRepository.UpdateAsync(person);
-                return Ok(person);
+                string photoUrl;
+                photoUrl = await _personService.PostPhoto(file, person);
+
+                return Ok(photoUrl);
             }
         }
        
@@ -63,7 +62,7 @@ namespace NameSearchApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            Person person = await _personRepository.GetDetail(id);
+            Person person = await _personService.GetPersonDetail(id);
 
 
             if (person != null)
@@ -71,13 +70,22 @@ namespace NameSearchApi.Controllers
             else
                 return StatusCode(404);
         }
-        /*
-        // PUT api/People/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
+
+        // POST api/People
+        [HttpPost]
+        public async Task<IActionResult> Post(Person person)
+        {
+            try
+            {
+                return Ok(await _personService.AddPerson(person));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(400, e.Message);
+            }
+        }
+        /*
         // DELETE api/People/5
         [HttpDelete("{id}")]
         public void Delete(int id)

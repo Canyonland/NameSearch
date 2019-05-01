@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using NameSearchCore;
+using Newtonsoft.Json;
 
 namespace NameSearchApi
 {
@@ -28,10 +29,12 @@ namespace NameSearchApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<PersonRepository, PersonRepository>();
-            services.AddTransient<FileSaver, FileSaver>();
+            services.AddTransient<PersonService, PersonService>();
             services.AddHttpContextAccessor();
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddDbContext<CommunityContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=Community;Trusted_Connection=True;"));
+            services.AddMvc().AddJsonOptions(options => { options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDbContext<CommunityContext>(options => options.UseSqlite(@"Filename=Community.db"));
+
+            //services.AddDbContext<CommunityContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=Community;Trusted_Connection=True;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
