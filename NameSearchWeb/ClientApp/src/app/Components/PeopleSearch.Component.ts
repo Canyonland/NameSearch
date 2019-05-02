@@ -4,8 +4,8 @@ import PersonProfile from "../Models/PeopleProfile";
 @Component({
   selector: "app-root",
   template: `
-    <div style="text-align:center">
-      <h1>Welcome to {{ title }}!</h1>
+    <div>
+      <h1 style="text-align:center">Welcome to {{ title }}!</h1>
       <div class="">
         <div class="">
           <div>

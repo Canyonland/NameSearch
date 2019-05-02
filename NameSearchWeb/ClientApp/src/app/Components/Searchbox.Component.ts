@@ -72,10 +72,10 @@ export class SearchBoxComponent implements OnInit, OnDestroy {
       (results: PersonProfile[]) => {
         this.loading.next(false);
         this.results.next(results);
-        this.notfound.next(false);
+        this.notfound.next(results === null);
       },
       (err: any) => {
-        //console.log("error:", err);
+        console.log("error:", err);
         this.loading.next(false);
         this.notfound.next(true);
         this.results.next(null);

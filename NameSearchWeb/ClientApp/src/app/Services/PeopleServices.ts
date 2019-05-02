@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@angular/core";
 import { Http, Response } from "@angular/http";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import {
   map,
   filter,
@@ -32,8 +32,11 @@ export class PeopleServices {
     let queryUrl: string = `${this.apiUrl}?name=${name}`;
 
     return this.http.get(queryUrl).pipe(
-      map((response: Response) => {
-        if (response.status === 200) {
+      catchError(error => {
+        return of("error");
+      }),
+      map((response: any) => {
+        if (response != "error") {
           return (<any>response.json()).map(item => {
             const personProfile = new PersonProfile({
               Id: item.id,
@@ -49,7 +52,7 @@ export class PeopleServices {
             return personProfile;
           });
         } else {
-          throw new Error("calling serviee failed.");
+          return null;
         }
       })
     );
