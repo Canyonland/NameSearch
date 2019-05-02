@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.String;
 
 namespace NameSearchCore
 {
@@ -20,7 +21,7 @@ namespace NameSearchCore
             _httpContextAccessor = httpContextAccessor;
             _personRepository = personRepository;
             _personApiPath = $@"{_httpContextAccessor.HttpContext.Request.Scheme.ToString()}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}{_httpContextAccessor.HttpContext.Request.Path.ToString()}";
-            _photosFolderPath = $@"{_httpContextAccessor.HttpContext.Request.Scheme.ToString()}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}/photos";
+            _photosFolderPath = $@"{_httpContextAccessor.HttpContext.Request.Scheme.ToString()}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}/assets/photos";
         }
         public async Task<Person> GetPersonByID(int id)
         {
@@ -33,7 +34,7 @@ namespace NameSearchCore
 
         public async Task<List<PersonProfile>> SearchPeopleByName (string name)
         {
-            //Thread.Sleep(10000);
+            Thread.Sleep(5000);
             List<Person> people = await _personRepository.SearchPeople(name);
             return people.ConvertAll<PersonProfile>(p => new PersonProfile
             {
@@ -42,9 +43,10 @@ namespace NameSearchCore
                 Age = p.Age,
                 Address = p.Address,
                 Id = $@"GET {_personApiPath}/{p.Id}",
-                PicturePath = p.PicturePath,
+                PhotoURI = IsNullOrEmpty(p.PicturePath)?"": $@"{_photosFolderPath}/{p.PicturePath}.jpg" ,
                 PhotoUploadURI = $@"{_personApiPath}/{p.Id}/photo",
-                Interests = p.PeopleInterests.ConvertAll( ip => ip.Interest.Value)
+                Interests = p.PeopleInterests.ConvertAll( ip => ip.Interest.Value),
+                PicturePath = p.PicturePath
 
             });
         }
@@ -66,7 +68,7 @@ namespace NameSearchCore
                 fileName = person.PicturePath?? Guid.NewGuid().ToString();
                
                 fileFullName = $"{fileName}.jpg";
-                fileFullPath = $@"{Directory.GetCurrentDirectory()}\wwwroot\Photos\{fileFullName}";
+                fileFullPath = $@"{Directory.GetCurrentDirectory()}\wwwroot\assets\Photos\{fileFullName}";
                 photoStream.Position = 0;
                 await Utilities.SaveFile(photoStream, fileFullPath);
 

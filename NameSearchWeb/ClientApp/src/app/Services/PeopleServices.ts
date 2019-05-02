@@ -14,7 +14,7 @@ import PersonProfile from "../Models/PeopleProfile";
 @Injectable()
 export class PeopleServices {
   apiUrl = "https://localhost:44310/api/people";
-  photosUrl = "https://localhost:44310/photos";
+  //photosUrl = "https://localhost:44310/assets/photos";
   constructor(public http: Http) {}
 
   uploadImage(image: File, queryUrl: string): Observable<Response> {
@@ -26,23 +26,27 @@ export class PeopleServices {
   }
 
   search(name: string): Observable<PersonProfile[]> {
+    if (name.toLowerCase() == "all") {
+      name = "";
+    }
     let queryUrl: string = `${this.apiUrl}?name=${name}`;
 
     return this.http.get(queryUrl).pipe(
       map((response: Response) => {
         if (response.status === 200) {
           return (<any>response.json()).map(item => {
-            console.log(item);
-            return new PersonProfile({
+            const personProfile = new PersonProfile({
               Id: item.id,
               Name: item.name,
               Address: item.address,
               Age: item.age,
               PicturePath: item.picturePath,
               PhotoUploadURI: item.photoUploadURI,
-              ThumbNailURI: `${this.photosUrl}/${item.picturePath}.jpg`,
+              ThumbNailURI: item.photoURI,
               Interests: item.interests
             });
+
+            return personProfile;
           });
         } else {
           throw new Error("calling serviee failed.");
