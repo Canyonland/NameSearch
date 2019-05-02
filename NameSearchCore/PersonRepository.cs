@@ -30,7 +30,7 @@ namespace NameSearchCore
         }
         public async Task<Person> GetDetail(int id)
         {
-            return await _dbContext.People.AsQueryable().Include(person => person.Interests).Where(person => person.Id == id).FirstOrDefaultAsync();
+            return await _dbContext.People.AsQueryable().Include(person => person.PeopleInterests).ThenInclude( pi => pi.Interest).Where(person => person.Id == id).FirstOrDefaultAsync();
 
         }
         public async Task<List<Person>> SearchPeople(string name)
@@ -38,9 +38,9 @@ namespace NameSearchCore
 
 
             if (IsNullOrEmpty(name))
-                return await _dbContext.People.ToListAsync();
+                return await _dbContext.People.Include(person => person.PeopleInterests).ThenInclude(pi => pi.Interest).ToListAsync();
             else
-                return await _dbContext.People.AsQueryable().Where(p => p.FirstName.ToLower() == name.ToLower() || p.LastName.ToLower() == name.ToLower()).ToListAsync();
+                return await _dbContext.People.AsQueryable().Include(person => person.PeopleInterests).ThenInclude(pi => pi.Interest).Where(p => p.FirstName.ToLower().IndexOf ( name.ToLower())!=-1 || p.LastName.ToLower().IndexOf(name.ToLower()) != -1).ToListAsync();
             
            
            

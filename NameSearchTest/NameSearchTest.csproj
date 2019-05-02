@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NameSearchApi\NameSearchApi.csproj" />
     <ProjectReference Include="..\NameSearchCore\NameSearchCore.csproj" />
   </ItemGroup>
 

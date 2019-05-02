@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameSearchApi", "NameSearchApi\NameSearchApi.csproj", "{546B7B29-802C-4913-8FA6-FF1B92F2D639}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameSearchCore", "NameSearchCore\NameSearchCore.csproj", "{90CEC1D0-385B-489E-A4EA-B1D84449826E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NameSearchTest", "NameSearchTest\NameSearchTest.csproj", "{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameSearchTest", "NameSearchTest\NameSearchTest.csproj", "{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NameSearchWeb", "NameSearchWeb\NameSearchWeb.csproj", "{1A21C6B6-47E6-4483-9EB7-67C09F055CD0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0E9D47B4-9D48-4824-AF57-3DFCCC4C8B4A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F2FB166-4271-4B56-B273-84E7D4249E73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{546B7B29-802C-4913-8FA6-FF1B92F2D639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{546B7B29-802C-4913-8FA6-FF1B92F2D639}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{546B7B29-802C-4913-8FA6-FF1B92F2D639}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{546B7B29-802C-4913-8FA6-FF1B92F2D639}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90CEC1D0-385B-489E-A4EA-B1D84449826E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{90CEC1D0-385B-489E-A4EA-B1D84449826E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90CEC1D0-385B-489E-A4EA-B1D84449826E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,9 +27,18 @@ Global
 		{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A21C6B6-47E6-4483-9EB7-67C09F055CD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A21C6B6-47E6-4483-9EB7-67C09F055CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A21C6B6-47E6-4483-9EB7-67C09F055CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A21C6B6-47E6-4483-9EB7-67C09F055CD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{90CEC1D0-385B-489E-A4EA-B1D84449826E} = {0E9D47B4-9D48-4824-AF57-3DFCCC4C8B4A}
+		{25ADE2C8-75B6-4AF7-B03E-9B8F5027FD5C} = {2F2FB166-4271-4B56-B273-84E7D4249E73}
+		{1A21C6B6-47E6-4483-9EB7-67C09F055CD0} = {0E9D47B4-9D48-4824-AF57-3DFCCC4C8B4A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8764E77F-9EDA-4D7F-95AE-EEF2E8CF10E1}

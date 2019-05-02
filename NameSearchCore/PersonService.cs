@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NameSearchCore
@@ -12,12 +13,14 @@ namespace NameSearchCore
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PersonRepository _personRepository;
         private readonly string _personApiPath;
+        private readonly string _photosFolderPath;
 
         public PersonService(IHttpContextAccessor httpContextAccessor, PersonRepository personRepository)
         {
             _httpContextAccessor = httpContextAccessor;
             _personRepository = personRepository;
             _personApiPath = $@"{_httpContextAccessor.HttpContext.Request.Scheme.ToString()}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}{_httpContextAccessor.HttpContext.Request.Path.ToString()}";
+            _photosFolderPath = $@"{_httpContextAccessor.HttpContext.Request.Scheme.ToString()}://{_httpContextAccessor.HttpContext.Request.Host.ToString()}/photos";
         }
         public async Task<Person> GetPersonByID(int id)
         {
@@ -40,8 +43,8 @@ namespace NameSearchCore
                 Address = p.Address,
                 Id = $@"GET {_personApiPath}/{p.Id}",
                 PicturePath = p.PicturePath,
-                PhotoUploadURI = $@"POST {_personApiPath}/{p.Id}/photo"
-
+                PhotoUploadURI = $@"{_personApiPath}/{p.Id}/photo",
+                Interests = p.PeopleInterests.ConvertAll( ip => ip.Interest.Value)
 
             });
         }
@@ -64,13 +67,14 @@ namespace NameSearchCore
                
                 fileFullName = $"{fileName}.jpg";
                 fileFullPath = $@"{Directory.GetCurrentDirectory()}\wwwroot\Photos\{fileFullName}";
+                photoStream.Position = 0;
                 await Utilities.SaveFile(photoStream, fileFullPath);
 
 
                 person.PicturePath = fileName;
                 await _personRepository.Update(person);
             }
-            photoUrl= $@"{_personApiPath}/{person.Id}/photos/{fileFullName}";
+            photoUrl= $@"{_photosFolderPath}/{fileFullName}";
             return photoUrl;
         }
 
