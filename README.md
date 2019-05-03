@@ -5,7 +5,7 @@ The Angular site is configured to output to wwwroot folder when building with ng
 
 Once it's downloaded, open the solution in Visual Studio, (I used VS 2019, I think 2017 should work as well), open Package Manager Console, navigate to ClientApp under NameSearchWeb folder, run the following two ng cli commands:
       PM> npm install
-      PM> ng build
+      PM> ng build (optional)
       
 Finally, hit Ctr + F5 to build and launch https://localhost:44310/index.html
 
