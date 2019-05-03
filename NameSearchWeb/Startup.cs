@@ -41,6 +41,10 @@ namespace NameSearchApi
                 });
 
             });
+            services.AddSwaggerGen(sw => {
+                sw.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "Name Search API" });
+
+            });
             //services.AddDbContext<CommunityContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=SaltLakeCity;Trusted_Connection=True;"));
         }
 
@@ -56,6 +60,13 @@ namespace NameSearchApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseSwagger();
+            app.UseSwaggerUI(sw =>
+            {
+                sw.RoutePrefix = "help";
+                sw.InjectStylesheet("../css/swagger.min.css");
+                sw.SwaggerEndpoint("../swagger/v1/swagger.json", "Name Search API");
+            });
             app.UseCors(ClientAppOrigin);
             app.UseHttpsRedirection();
             app.UseStaticFiles();

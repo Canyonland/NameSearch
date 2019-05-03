@@ -15,8 +15,8 @@ import PersonProfile from "../Models/PeopleProfile";
               (notfound)="notfound = $event"
             ></search-box>
 
-            <div *ngIf="loading">loading...</div>
-            <h2 *ngIf="notfound">not found</h2>
+            <div *ngIf="loading" style="text-align:center">loading...</div>
+            <h2 *ngIf="notfound" style="text-align:center">not found</h2>
           </div>
         </div>
       </div>

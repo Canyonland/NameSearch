@@ -10,12 +10,12 @@ namespace NameSearchCore
     public static class Utilities
     {
 
-        public static async Task SaveFile(Stream fileStream, string fileFullPath)
+        public static async Task SaveFile(Stream someStream, string fileFullPath)
         {
-
+            someStream.Position = 0;
             using (FileStream fs = new FileStream(fileFullPath, FileMode.Create))
             {
-                await fileStream.CopyToAsync(fs);
+                await someStream.CopyToAsync(fs);
             }
 
         }

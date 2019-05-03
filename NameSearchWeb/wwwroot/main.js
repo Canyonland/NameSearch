@@ -47,12 +47,11 @@ var PeopleSearchComponent = /** @class */ (function () {
     }
     PeopleSearchComponent.prototype.updateResults = function (results) {
         this.results = results;
-        console.log("peoplesearch.results", this.results);
     };
     PeopleSearchComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: "app-root",
-            template: "\n    <div style=\"text-align:center\">\n      <h1>Welcome to {{ title }}!</h1>\n      <div class=\"containter\">\n        <div class=\"page-header\">\n          <search-box\n            class=\" mx-30 \"\n            (loading)=\"loading = $event\"\n            (results)=\"updateResults($event)\"\n          ></search-box>\n\n          <div *ngIf=\"loading\">loading...</div>\n        </div>\n      </div>\n    </div>\n    <div class=\"row\">\n      <search-result\n        *ngFor=\"let result of results\"\n        [result]=\"result\"\n      ></search-result>\n    </div>\n  "
+            template: "\n    <div>\n      <h1 style=\"text-align:center\">Welcome to {{ title }}!</h1>\n      <div class=\"\">\n        <div class=\"\">\n          <div>\n            <search-box\n              (loading)=\"loading = $event\"\n              (results)=\"updateResults($event)\"\n              (notfound)=\"notfound = $event\"\n            ></search-box>\n\n            <div *ngIf=\"loading\" style=\"text-align:center\">loading...</div>\n            <h2 *ngIf=\"notfound\" style=\"text-align:center\">not found</h2>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <search-result\n          *ngFor=\"let result of results\"\n          [result]=\"result\"\n        ></search-result>\n      </div>\n    </div>\n  "
         })
     ], PeopleSearchComponent);
     return PeopleSearchComponent;
@@ -104,8 +103,6 @@ var SearchResultComponent = /** @class */ (function () {
             _this.peopleService
                 .uploadImage(_this.selectedFile.file, _this.result.PhotoUploadURI)
                 .subscribe(function (res) {
-                console.log("res", res);
-                console.log("blah", _this.result.ThumbNailURI);
                 document
                     .getElementById("" + _this.result.Id)
                     .setAttribute("src", res["_body"]);
@@ -120,7 +117,7 @@ var SearchResultComponent = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             inputs: ["result"],
             selector: "search-result",
-            template: "\n    <div class=\"d-inline-flex m-3 text-white\">\n      <div class=\"col-xs-6   bg-primary text-white\" style=\"width: 200px;\">\n        <h6>{{ result.Name }} (Age:{{ result.Age }})</h6>\n\n        {{ result.Address }}\n      </div>\n\n      <div class=\"col-xs-6\" style=\"height:160px;\">\n        <img\n          *ngIf=\"hasImage\"\n          id=\"{{ result.Id }}\"\n          src=\"{{ result.ThumbNailURI }}\"\n          width=\"200\"\n          height=\"160\"\n        />\n\n        <img\n          *ngIf=\"!hasImage\"\n          id=\"{{ result.Id }}\"\n          src=\"https://localhost:44310/photos/noimage.jpg\"\n          width=\"200\"\n          height=\"160\"\n        />\n      </div>\n\n      <div class=\"col-xs-6 text-white\" style=\"width: 300px;\">\n        <input\n          #imageInput\n          type=\"file\"\n          accept=\"image/jpeg\"\n          (change)=\"processFile(imageInput)\"\n        />\n      </div>\n    </div>\n  "
+            template: "\n    <div class=\"d-inline-flex m-3 text-white\">\n      <div class=\"col-xs-6   bg-primary text-white\" style=\"width: 200px;\">\n        <h6>{{ result.Name }} (Age:{{ result.Age }})</h6>\n\n        {{ result.Address }}\n        Interested in:\n        <ul>\n          <li *ngFor=\"let interest of result.Interests\">{{ interest }}</li>\n        </ul>\n      </div>\n\n      <div class=\"col-xs-6\" style=\"height:160px;\">\n        <img\n          *ngIf=\"hasImage\"\n          id=\"{{ result.Id }}\"\n          src=\"{{ result.ThumbNailURI }}\"\n          width=\"200\"\n          height=\"160\"\n        />\n\n        <img\n          *ngIf=\"!hasImage\"\n          id=\"{{ result.Id }}\"\n          src=\"https://localhost:44310/assets/photos/noimage.jpg\"\n          width=\"200\"\n          height=\"160\"\n        />\n      </div>\n\n      <div class=\"col-xs-6 text-white\" style=\"width: 300px;\">\n        <input\n          #imageInput\n          type=\"file\"\n          accept=\"image/jpeg\"\n          (change)=\"processFile(imageInput)\"\n        />\n      </div>\n    </div>\n  "
         }),
         __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_Services_PeopleServices__WEBPACK_IMPORTED_MODULE_1__["PeopleServices"])),
         __metadata("design:paramtypes", [_Services_PeopleServices__WEBPACK_IMPORTED_MODULE_1__["PeopleServices"]])
@@ -175,38 +172,41 @@ var SearchBoxComponent = /** @class */ (function () {
         this.el = el;
         this.loading = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.results = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+        this.notfound = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
     }
-    SearchBoxComponent.prototype.GetAllPeople = function () {
-        var _this = this;
-        this.peopleService.search("").subscribe(function (results) {
-            _this.loading.next(false);
-            _this.results.next(results);
-        }, function (err) {
-            console.log("error:", err);
-            _this.loading.next(false);
-        }, function () {
-            _this.loading.next(false);
-        });
-    };
     SearchBoxComponent.prototype.ngOnInit = function () {
         var _this = this;
-        Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(this.el.nativeElement, "keyup")
-            .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (e) { return e.target.value; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])(function (text) { return text.length > 1; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["debounceTime"])(400), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])(function () { return _this.loading.next(true); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (query) { return _this.peopleService.search(query); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["switchAll"])())
-            .subscribe(function (results) {
+        var observable;
+        var keyupObservabe = Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(this.el.nativeElement, "keyup").pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (e) { return e.target.value; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["debounceTime"])(400));
+        keyupObservabe.subscribe(function () {
+            _this.results.next(null);
+            _this.notfound.next(false);
+        });
+        observable = keyupObservabe.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])(function (text) { return text.length > 1; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])(function () {
+            _this.loading.next(true);
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (query) { return _this.peopleService.search(query); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(function (error) { return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])(error); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["switchAll"])());
+        this.subscription = observable.subscribe(function (results) {
             _this.loading.next(false);
             _this.results.next(results);
+            _this.notfound.next(results === null);
         }, function (err) {
             console.log("error:", err);
             _this.loading.next(false);
+            _this.notfound.next(true);
+            _this.results.next(null);
         }, function () {
             _this.loading.next(false);
+            console.log("Complete");
         });
+    };
+    SearchBoxComponent.prototype.ngOnDestroy = function () {
+        this.subscription.unsubscribe();
     };
     SearchBoxComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
-            outputs: ["loading", "results"],
+            outputs: ["loading", "results", "notfound"],
             selector: "search-box",
-            template: "\n    <div class=\"d-flex justify-content-center\">\n      <input type=\"text\" class=\"mx-3\" placeholder=\"Search by name\" autofocus />\n      <input type=\"button\" value=\"Show All People\" (click)=\"GetAllPeople()\" />\n    </div>\n  "
+            template: "\n    <div>\n      <input\n        type=\"text\"\n        class=\"span6 input-large search-query form-control\"\n        placeholder=\"Search by name. Type ALL to see all people.\"\n        autofocus\n      />\n    </div>\n  "
         }),
         __param(0, Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"])(_Services_PeopleServices__WEBPACK_IMPORTED_MODULE_1__["PeopleServices"])),
         __metadata("design:paramtypes", [_Services_PeopleServices__WEBPACK_IMPORTED_MODULE_1__["PeopleServices"],
@@ -258,8 +258,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "PeopleServices", function() { return PeopleServices; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/http */ "./node_modules/@angular/http/fesm5/http.js");
-/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
-/* harmony import */ var _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../Models/PeopleProfile */ "./src/app/Models/PeopleProfile.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm5/operators/index.js");
+/* harmony import */ var _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Models/PeopleProfile */ "./src/app/Models/PeopleProfile.ts");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -273,11 +274,12 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var PeopleServices = /** @class */ (function () {
+    //photosUrl = "https://localhost:44310/assets/photos";
     function PeopleServices(http) {
         this.http = http;
         this.apiUrl = "https://localhost:44310/api/people";
-        this.photosUrl = "https://localhost:44310/photos";
     }
     PeopleServices.prototype.uploadImage = function (image, queryUrl) {
         var formData = new FormData();
@@ -285,26 +287,30 @@ var PeopleServices = /** @class */ (function () {
         return this.http.post(queryUrl, formData);
     };
     PeopleServices.prototype.search = function (name) {
-        var _this = this;
+        if (name.toLowerCase() == "all") {
+            name = "";
+        }
         var queryUrl = this.apiUrl + "?name=" + name;
-        return this.http.get(queryUrl).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_2__["map"])(function (response) {
-            if (response.status === 200) {
+        return this.http.get(queryUrl).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(function (error) {
+            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])("error");
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (response) {
+            if (response != "error") {
                 return response.json().map(function (item) {
-                    console.log(item);
-                    return new _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_3__["default"]({
+                    var personProfile = new _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_4__["default"]({
                         Id: item.id,
                         Name: item.name,
                         Address: item.address,
                         Age: item.age,
                         PicturePath: item.picturePath,
                         PhotoUploadURI: item.photoUploadURI,
-                        ThumbNailURI: _this.photosUrl + "/" + item.picturePath + ".jpg",
+                        ThumbNailURI: item.photoURI,
                         Interests: item.interests
                     });
+                    return personProfile;
                 });
             }
             else {
-                throw new Error("calling serviee failed.");
+                return null;
             }
         }));
     };
