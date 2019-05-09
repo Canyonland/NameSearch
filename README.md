@@ -3,7 +3,7 @@ The client side of this application is created with Angular 6, the server side i
 
 The Angular site is configured to output to wwwroot folder when building with ng cli, so that both Angular web page and the api can be served from the same port.
 
-Once it's downloaded, open the solution in Visual Studio, (I used VS 2019, I think 2017 should work as well), open Package Manager Console, navigate to ClientApp under NameSearchWeb folder, run the following two ng cli commands:
+Once it's downloaded, open the solution in Visual Studio, (I used VS 2019, 2017 should work as well), open Package Manager Console, navigate to ClientApp under NameSearchWeb folder, run the following two ng cli commands:
       PM> npm install
       PM> ng build (optional)
       
