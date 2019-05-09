@@ -30,6 +30,7 @@ import PersonProfile from "../Models/PeopleProfile";
   `
 })
 export class PeopleSearchComponent {
+  //this is the main component
   title = "People Search App";
   notfound: boolean;
   loading: boolean;
