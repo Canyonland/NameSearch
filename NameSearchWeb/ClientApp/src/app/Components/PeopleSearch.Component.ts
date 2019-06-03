@@ -12,11 +12,11 @@ import PersonProfile from "../Models/PeopleProfile";
             <search-box
               (loading)="loading = $event"
               (results)="updateResults($event)"
-              (notfound)="notfound = $event"
+              (error)="error = $event"
             ></search-box>
 
             <div *ngIf="loading" style="text-align:center">loading...</div>
-            <h2 *ngIf="notfound" style="text-align:center">not found</h2>
+            <h2 *ngIf="error" style="text-align:center">{{error}}</h2>
           </div>
         </div>
       </div>
@@ -32,7 +32,7 @@ import PersonProfile from "../Models/PeopleProfile";
 export class PeopleSearchComponent {
   //this is the main component
   title = "People Search App";
-  notfound: boolean;
+  error: string;
   loading: boolean;
   results!: PersonProfile[];
   updateResults(results: PersonProfile[]): void {

@@ -19,7 +19,7 @@ import {
 } from "rxjs/operators";
 
 @Component({
-  outputs: ["loading", "results", "notfound"],
+  outputs: ["loading", "results", "error"],
   selector: "search-box",
   template: `
     <div>
@@ -35,7 +35,7 @@ import {
 export class SearchBoxComponent implements OnInit, OnDestroy {
   loading: EventEmitter<boolean> = new EventEmitter<boolean>();
   results: EventEmitter<PersonProfile[]> = new EventEmitter<PersonProfile[]>();
-  notfound: EventEmitter<boolean> = new EventEmitter<boolean>();
+  error: EventEmitter<string> = new EventEmitter<string>();
   subscription: Subscription;
   constructor(
     @Inject(PeopleServices) public peopleService: PeopleServices,
@@ -43,7 +43,7 @@ export class SearchBoxComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    let observable: Observable<boolean | PersonProfile[]>;
+    let observable: Observable<string | PersonProfile[]>;
 
     let keyupObservabe: Observable<boolean> = fromEvent(
       this.el.nativeElement,
@@ -55,35 +55,42 @@ export class SearchBoxComponent implements OnInit, OnDestroy {
 
     keyupObservabe.subscribe(() => {
       this.results.next(null);
-      this.notfound.next(false);
+      this.error.next(null);
     });
 
     observable = keyupObservabe.pipe(
-      filter((text: string) => text.length > 1),
+      filter((text: string) => text.length > 2),
       tap(() => {
         this.loading.next(true);
       }),
       map((query: string) => this.peopleService.search(query)),
-      catchError(error => of(error)),
+      //catchError(error => {
+      // return of(error)
+      //}),
       switchAll()
     );
 
     this.subscription = observable.subscribe(
       (results: PersonProfile[]) => {
         this.loading.next(false);
-        this.results.next(results);
-        this.notfound.next(results === null);
-      },
-      (err: any) => {
-        console.log("error:", err);
-        this.loading.next(false);
-        this.notfound.next(true);
-        this.results.next(null);
-      },
-      () => {
-        this.loading.next(false);
-        console.log("Complete");
+        if (typeof results === "object") {
+          this.results.next(results);
+        }
+        else {
+          this.error.next(results);
+        }
       }
+      //,
+      //(err: any) => {
+      //  console.log("error:", err);
+      //  this.loading.next(false);
+      //  this.error.next(true);
+      //  this.results.next(null);
+      //},
+      //() => {
+      //  this.loading.next(false);
+      //  console.log("Complete");
+      //}
     );
   }
 

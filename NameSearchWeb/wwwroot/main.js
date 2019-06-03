@@ -43,6 +43,7 @@ var __decorate = (undefined && undefined.__decorate) || function (decorators, ta
 
 var PeopleSearchComponent = /** @class */ (function () {
     function PeopleSearchComponent() {
+        //this is the main component
         this.title = "People Search App";
     }
     PeopleSearchComponent.prototype.updateResults = function (results) {
@@ -51,7 +52,7 @@ var PeopleSearchComponent = /** @class */ (function () {
     PeopleSearchComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: "app-root",
-            template: "\n    <div>\n      <h1 style=\"text-align:center\">Welcome to {{ title }}!</h1>\n      <div class=\"\">\n        <div class=\"\">\n          <div>\n            <search-box\n              (loading)=\"loading = $event\"\n              (results)=\"updateResults($event)\"\n              (notfound)=\"notfound = $event\"\n            ></search-box>\n\n            <div *ngIf=\"loading\" style=\"text-align:center\">loading...</div>\n            <h2 *ngIf=\"notfound\" style=\"text-align:center\">not found</h2>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <search-result\n          *ngFor=\"let result of results\"\n          [result]=\"result\"\n        ></search-result>\n      </div>\n    </div>\n  "
+            template: "\n    <div>\n      <h1 style=\"text-align:center\">Welcome to {{ title }}!</h1>\n      <div class=\"\">\n        <div class=\"\">\n          <div>\n            <search-box\n              (loading)=\"loading = $event\"\n              (results)=\"updateResults($event)\"\n              (error)=\"error = $event\"\n            ></search-box>\n\n            <div *ngIf=\"loading\" style=\"text-align:center\">loading...</div>\n            <h2 *ngIf=\"error\" style=\"text-align:center\">{{error}}</h2>\n          </div>\n        </div>\n      </div>\n      <div class=\"row\">\n        <search-result\n          *ngFor=\"let result of results\"\n          [result]=\"result\"\n        ></search-result>\n      </div>\n    </div>\n  "
         })
     ], PeopleSearchComponent);
     return PeopleSearchComponent;
@@ -172,7 +173,7 @@ var SearchBoxComponent = /** @class */ (function () {
         this.el = el;
         this.loading = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
         this.results = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
-        this.notfound = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
+        this.error = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["EventEmitter"]();
     }
     SearchBoxComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -180,31 +181,43 @@ var SearchBoxComponent = /** @class */ (function () {
         var keyupObservabe = Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["fromEvent"])(this.el.nativeElement, "keyup").pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (e) { return e.target.value; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["debounceTime"])(400));
         keyupObservabe.subscribe(function () {
             _this.results.next(null);
-            _this.notfound.next(false);
+            _this.error.next(null);
         });
-        observable = keyupObservabe.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])(function (text) { return text.length > 1; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])(function () {
+        observable = keyupObservabe.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["filter"])(function (text) { return text.length > 2; }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["tap"])(function () {
             _this.loading.next(true);
-        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (query) { return _this.peopleService.search(query); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(function (error) { return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])(error); }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["switchAll"])());
+        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (query) { return _this.peopleService.search(query); }), 
+        //catchError(error => {
+        // return of(error)
+        //}),
+        Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["switchAll"])());
         this.subscription = observable.subscribe(function (results) {
             _this.loading.next(false);
-            _this.results.next(results);
-            _this.notfound.next(results === null);
-        }, function (err) {
-            console.log("error:", err);
-            _this.loading.next(false);
-            _this.notfound.next(true);
-            _this.results.next(null);
-        }, function () {
-            _this.loading.next(false);
-            console.log("Complete");
-        });
+            if (typeof results === "object") {
+                _this.results.next(results);
+            }
+            else {
+                _this.error.next(results);
+            }
+        }
+        //,
+        //(err: any) => {
+        //  console.log("error:", err);
+        //  this.loading.next(false);
+        //  this.error.next(true);
+        //  this.results.next(null);
+        //},
+        //() => {
+        //  this.loading.next(false);
+        //  console.log("Complete");
+        //}
+        );
     };
     SearchBoxComponent.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
     };
     SearchBoxComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
-            outputs: ["loading", "results", "notfound"],
+            outputs: ["loading", "results", "error"],
             selector: "search-box",
             template: "\n    <div>\n      <input\n        type=\"text\"\n        class=\"span6 input-large search-query form-control\"\n        placeholder=\"Search by name. Type ALL to see all people.\"\n        autofocus\n      />\n    </div>\n  "
         }),
@@ -292,25 +305,27 @@ var PeopleServices = /** @class */ (function () {
         }
         var queryUrl = this.apiUrl + "?name=" + name;
         return this.http.get(queryUrl).pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["catchError"])(function (error) {
-            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])("error");
-        }), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (response) {
-            if (response != "error") {
-                return response.json().map(function (item) {
-                    var personProfile = new _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_4__["default"]({
-                        Id: item.id,
-                        Name: item.name,
-                        Address: item.address,
-                        Age: item.age,
-                        PicturePath: item.picturePath,
-                        PhotoUploadURI: item.photoUploadURI,
-                        ThumbNailURI: item.photoURI,
-                        Interests: item.interests
+            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["of"])(error);
+        }) // this catchError is important
+        , Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_3__["map"])(function (response) {
+            switch (response.status) {
+                case 200:
+                    return response.json().map(function (item) {
+                        return new _Models_PeopleProfile__WEBPACK_IMPORTED_MODULE_4__["default"]({
+                            Id: item.id,
+                            Name: item.name,
+                            Address: item.address,
+                            Age: item.age,
+                            PicturePath: item.picturePath,
+                            PhotoUploadURI: item.photoUploadURI,
+                            ThumbNailURI: item.photoURI,
+                            Interests: item.interests
+                        });
                     });
-                    return personProfile;
-                });
-            }
-            else {
-                return null;
+                case 404:
+                    return "not found";
+                default:
+                    return "server error";
             }
         }));
     };

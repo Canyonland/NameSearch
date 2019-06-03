@@ -1,6 +1,6 @@
 import { Injectable, Inject } from "@angular/core";
 import { Http, Response } from "@angular/http";
-import { Observable, of } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
 import {
   map,
   filter,
@@ -25,20 +25,25 @@ export class PeopleServices {
     return this.http.post(queryUrl, formData);
   }
 
-  search(name: string): Observable<PersonProfile[]> {
-    if (name.toLowerCase() == "all") {
+  search(name: string): Observable<PersonProfile[] | string> {
+    if (name.toLowerCase() === "bad")
+      return of("invalid name");
+
+    if (name.toLowerCase() === "all") {
       name = "";
     }
     let queryUrl: string = `${this.apiUrl}?name=${name}`;
 
     return this.http.get(queryUrl).pipe(
       catchError(error => {
-        return of("error");
-      }),
-      map((response: any) => {
-        if (response != "error") {
+        return of(error);
+      }) // this catchError is important
+      ,
+      map((response: Response) => {
+        switch (response.status) {
+          case 200: 
           return (<any>response.json()).map(item => {
-            const personProfile = new PersonProfile({
+            return new PersonProfile({
               Id: item.id,
               Name: item.name,
               Address: item.address,
@@ -48,12 +53,13 @@ export class PeopleServices {
               ThumbNailURI: item.photoURI,
               Interests: item.interests
             });
-
-            return personProfile;
           });
-        } else {
-          return null;
+          case 404:
+            return "not found";
+          default:
+           return "server error";
         }
+        
       })
     );
   }
